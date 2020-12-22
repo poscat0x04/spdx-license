@@ -1,0 +1,6 @@
+cradle:
+  cabal:
+    - path: "./src"
+      component: "lib:spdx-license"
+    - path: "./test"
+      component: "test:spdx-license-test"
