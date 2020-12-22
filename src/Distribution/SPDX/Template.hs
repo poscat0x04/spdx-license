@@ -56,7 +56,9 @@ data Piece
   | Optional [Piece]
   | Var
       { name :: {-# UNPACK #-} Text,
+        -- | The original content
         original :: {-# UNPACK #-} Text,
+        -- | A POSIX ERE that any new value must match
         match :: {-# UNPACK #-} Text
       }
   deriving (Show, Eq, Generic)
@@ -66,6 +68,7 @@ prettyPiece (Substansive s) = s
 prettyPiece (Optional o) = [i|<<beginOptional>>#{foldMap prettyPiece o}<<endOptional>>|]
 prettyPiece Var {..} = [i|<<var;name="#{name}";original="#{original}";match="#{match}">>|]
 
+-- | Pretty-print a license template
 prettyLicense :: License -> Text
 prettyLicense (License ps) = foldMap prettyPiece ps
 
@@ -129,6 +132,7 @@ var = bracket $ do
 piece :: Parser Piece
 piece = try var <|> try optional <|> try substansive
 
+-- | License parser
 license :: Parser License
 license = do
   pieces <- many piece
@@ -152,5 +156,6 @@ substitute ctx Var {..} =
 substitute' :: Map Text Text -> [Piece] -> Either SubstitutionError Text
 substitute' ctx ps = T.concat <$> traverse (substitute ctx) ps
 
+-- | Render a license from a context, if a var is not in the context, the original value will be used
 render :: Map Text Text -> License -> Either SubstitutionError Text
 render ctx (License ps) = T.concat <$> traverse (substitute ctx) ps

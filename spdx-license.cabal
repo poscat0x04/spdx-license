@@ -2,10 +2,10 @@ cabal-version:      3.0
 name:               spdx-license
 version:            0.1.0
 
--- synopsis:
--- description:
--- category:
--- license:
+synopsis:           SPDX license templates
+description:        Parsing, pretty-printing and rendering of SPDX license templates
+category:           Data
+license:            BSD-3-Clause
 license-file:       LICENSE
 author:             poscat
 maintainer:         poscat <poscat@mail.poscat.moe>
