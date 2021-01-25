@@ -11,12 +11,14 @@ module Distribution.SPDX.Template
     license,
     prettyLicense,
     render,
+    unsafeRender,
   )
 where
 
 import Data.Functor
 import Data.Map.Strict (Map)
 import qualified Data.Map.Strict as M
+import Data.Maybe (fromMaybe)
 import Data.String.Interpolate
 import Data.Text (Text, pack)
 import qualified Data.Text as T
@@ -156,6 +158,18 @@ substitute ctx Var {..} =
 substitute' :: Map Text Text -> [Piece] -> Either SubstitutionError Text
 substitute' ctx ps = T.concat <$> traverse (substitute ctx) ps
 
+unsafeSubstitute :: Map Text Text -> Piece -> Text
+unsafeSubstitute _ (Substansive s) = s
+unsafeSubstitute ctx (Optional ps) = unsafeSubstitute' ctx ps
+unsafeSubstitute ctx Var {..} = fromMaybe original $ M.lookup name ctx
+
+unsafeSubstitute' :: Map Text Text -> [Piece] -> Text
+unsafeSubstitute' ctx ps = T.concat $ map (unsafeSubstitute ctx) ps
+
 -- | Render a license from a context, if a var is not in the context, the original value will be used
 render :: Map Text Text -> License -> Either SubstitutionError Text
 render ctx (License ps) = T.concat <$> traverse (substitute ctx) ps
+
+-- | Render a license without checking whether the texts match the regexes
+unsafeRender :: Map Text Text -> License -> Text
+unsafeRender ctx (License ps) = T.concat $ map (unsafeSubstitute ctx) ps
