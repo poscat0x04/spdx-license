@@ -1,6 +1,6 @@
 cabal-version:      3.0
 name:               spdx-license
-version:            0.1.0
+version:            0.1.1
 
 synopsis:           SPDX license templates
 description:        Parsing, pretty-printing and rendering of SPDX license templates
